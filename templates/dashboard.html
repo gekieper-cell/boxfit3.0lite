@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="mb-5">
+    <h2 class="text-xl font-semibold">Dashboard</h2>
+    <p class="text-gray-500 text-sm">Bienvenido, {{ current_user.username }}</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="stat-card">
+        <div class="flex items-center justify-between">
+            <div><p class="text-gray-500 text-xs">Alumnos</p><p class="text-2xl font-bold">0</p></div>
+            <i class="fas fa-users text-2xl text-blue-400"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="flex items-center justify-between">
+            <div><p class="text-gray-500 text-xs">Personalizados</p><p class="text-2xl font-bold">0</p></div>
+            <i class="fas fa-crown text-2xl text-yellow-500"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="flex items-center justify-between">
+            <div><p class="text-gray-500 text-xs">Ventas Hoy</p><p class="text-2xl font-bold">0</p></div>
+            <i class="fas fa-shopping-cart text-2xl text-green-400"></i>
+        </div>
+    </div>
+</div>
+<div class="mt-6 card">
+    <div class="card-header"><h3 class="font-semibold">Venta Rápida - Bebidas</h3></div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('registrar_venta_bebida') }}">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <select name="bebida_id" class="form-control" required>
+                    <option value="">Seleccionar bebida</option>
+                </select>
+                <input type="number" name="cantidad" value="1" min="1" class="form-control">
+                <select name="alumno_id" class="form-control">
+                    <option value="">Sin alumno</option>
+                </select>
+                <button type="submit" class="btn btn-success">Registrar Venta</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
