@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Ventas de Bebidas{% endblock %}
+
+{% block content %}
+<div class="mb-5"><h2 class="text-xl font-semibold">Ventas de Bebidas</h2><p class="text-gray-500 text-sm">Historial completo de ventas</p></div>
+
+<div class="card">
+    <div class="card-header"><h3 class="font-semibold">Todas las Ventas</h3></div>
+    <div class="card-body">
+        <div class="table-container">
+            <table class="w-full">
+                <thead>
+                    <th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Alumno</th><th>Monto</th><th>Vendedor</th><th></th>
+                </thead>
+                <tbody>
+                    {% for v in ventas %}
+                    <tr>
+                        <td class="text-xs">{{ v.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ v.bebida_nombre }}</td>
+                        <td>{{ v.cantidad }}</td>
+                        <td>{{ v.alumno.nombre if v.alumno else 'Sin alumno' }}</td>
+                        <td class="text-green-600">${{ v.monto }}</td>
+                        <td class="text-xs">{{ v.usuario.username if v.usuario else '-' }}</td>
+                        <td><button onclick="window.open('/ticket/{{ v.id }}', '_blank', 'width=400,height=600')" class="text-gray-500"><i class="fas fa-print"></i></button></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

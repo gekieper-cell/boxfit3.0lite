@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Alumnos Deudores{% endblock %}
+
+{% block content %}
+<div class="mb-5">
+    <h2 class="text-xl font-semibold">Alumnos con Deuda</h2>
+    <p class="text-gray-500 text-sm">Lista de alumnos que deben regularizar su situación</p>
+</div>
+
+<div class="card">
+    <div class="overflow-x-auto p-4">
+        <table class="w-full">
+            <thead>
+                <th>Nombre</th><th>Teléfono</th><th>Cuota</th><th>Vencimiento</th><th>Días de atraso</th><th>Acciones</th>
+            </thead>
+            <tbody>
+                {% for a in alumnos %}
+                <tr>
+                    <td>{{ a.nombre }}</td>
+                    <td>{% if a.telefono %}<a href="https://wa.me/{{ a.telefono }}" target="_blank" class="text-green-500"><i class="fab fa-whatsapp"></i> {{ a.telefono }}</a>{% else %}-{% endif %}</td>
+                    <td>${{ "%.0f"|format(a.valor_cuota) }}</td>
+                    <td class="text-red-600">{{ a.fecha_vencimiento.strftime('%d/%m/%Y') if a.fecha_vencimiento else '-' }}</td>
+                    <td>{% if a.fecha_vencimiento %}{{ (now.date() - a.fecha_vencimiento).days }}{% else %}-{% endif %} días</td>
+                    <td><div class="flex gap-2"><a href="{{ url_for('pagar_alumno', id=a.id) }}" class="btn btn-success btn-sm">Registrar Pago</a><a href="https://wa.me/{{ a.telefono }}?text=Hola%20{{ a.nombre }}%2C%20te%20recordamos%20que%20tu%20cuota%20está%20vencida.%20Por%20favor%20regulariza%20tu%20situación." target="_blank" class="btn btn-outline btn-sm"><i class="fab fa-whatsapp"></i> Recordar</a></div></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

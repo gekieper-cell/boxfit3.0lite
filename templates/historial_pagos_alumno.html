@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Historial de Pagos{% endblock %}
+
+{% block content %}
+<div class="mb-5">
+    <h2 class="text-xl font-semibold">Historial de Pagos</h2>
+    <p class="text-gray-500 text-sm">Alumno: {{ alumno.nombre }}</p>
+    <a href="{{ url_for('alumnos') }}" class="text-blue-500 text-sm hover:underline">← Volver a alumnos</a>
+</div>
+
+<div class="card">
+    <div class="card-header"><h3 class="font-semibold">Pagos Realizados</h3></div>
+    <div class="card-body">
+        {% if pagos %}
+        <div class="table-container">
+            <table class="w-full">
+                <thead>
+                    <th>Fecha</th><th>Monto</th><th>Período</th><th>Método</th><th>Comprobante</th><th>Fecha Transferencia</th>
+                </thead>
+                <tbody>
+                    {% for p in pagos %}
+                    <tr>
+                        <td>{{ p.fecha_pago.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td class="text-green-600">${{ "%.2f"|format(p.monto) }}</td>
+                        <td>{{ p.periodo_mes }}/{{ p.periodo_anio }}</td>
+                        <td>
+                            {% if p.metodo_pago == 'efectivo' %}💵 Efectivo{% elif p.metodo_pago == 'transferencia' %}🏦 Transferencia{% else %}💳 Tarjeta{% endif %}
+                        </td>
+                        <td>{{ p.comprobante or '-' }}</td>
+                        <td>{{ p.fecha_transferencia or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+            <div class="flex justify-between"><span class="font-semibold">Total pagado:</span><span class="text-xl font-bold text-green-600">${{ "%.2f"|format(pagos|sum(attribute='monto')) }}</span></div>
+            <div class="flex justify-between mt-1"><span class="font-semibold">Total pagos:</span><span>{{ pagos|length }}</span></div>
+        </div>
+        {% else %}
+        <div class="text-center py-6 text-gray-400"><i class="fas fa-receipt text-3xl mb-2 block"></i><p>No hay pagos registrados</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Pagar Cuota{% endblock %}
+
+{% block content %}
+<div class="mb-5">
+    <h2 class="text-xl font-semibold">Registrar Pago</h2>
+    <p class="text-gray-500 text-sm">Alumno: {{ alumno.nombre }}</p>
+    <a href="{{ url_for('alumnos') }}" class="text-blue-500 text-sm hover:underline">← Volver</a>
+</div>
+
+<div class="card max-w-lg">
+    <div class="card-body">
+        <div class="bg-blue-50 p-4 rounded-lg mb-4">
+            <p><strong>Cuota mensual:</strong> ${{ "%.2f"|format(alumno.valor_cuota) }}</p>
+            <p><strong>Vencimiento actual:</strong> {{ alumno.fecha_vencimiento.strftime('%d/%m/%Y') if alumno.fecha_vencimiento else 'No definido' }}</p>
+        </div>
+
+        <form method="POST" id="formPago">
+            <div class="form-group">
+                <label class="form-label">Monto a pagar</label>
+                <input type="number" name="monto" id="monto" value="{{ alumno.valor_cuota }}" step="0.01" required class="form-control" onchange="calcularDescuento()">
+                <div class="text-xs text-gray-500 mt-1">💡 Pago en efectivo: 5% de descuento</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Método de pago *</label>
+                <select name="metodo_pago" id="metodo_pago" class="form-control" onchange="calcularDescuento()">
+                    <option value="efectivo">💵 Efectivo (5% descuento)</option>
+                    <option value="transferencia">🏦 Transferencia bancaria</option>
+                    <option value="tarjeta">💳 Tarjeta de crédito/débito</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="fechaTransferencia" style="display: none;">
+                <label class="form-label">📅 Fecha de transferencia</label>
+                <input type="date" name="fecha_transferencia" class="form-control" value="{{ now.strftime('%Y-%m-%d') }}">
+                <div class="text-xs text-gray-500 mt-1">Registrar la fecha en que se realizó la transferencia</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">N° Comprobante (opcional)</label>
+                <input type="text" name="comprobante" class="form-control" placeholder="Ej: 001-12345678">
+            </div>
+            
+            <div id="resumen" class="bg-gray-100 p-3 rounded-lg mb-4">
+                <div class="flex justify-between"><span>Subtotal:</span><span>$<span id="subtotal">{{ alumno.valor_cuota }}</span></span></div>
+                <div class="flex justify-between text-green-600" id="descuentoRow"><span>Descuento (5%):</span><span>-$<span id="descuento">0</span></span></div>
+                <div class="flex justify-between font-bold pt-2 border-t mt-2"><span>TOTAL:</span><span>$<span id="total">{{ alumno.valor_cuota }}</span></span></div>
+            </div>
+            
+            <button type="submit" class="btn btn-success w-full py-3">Registrar Pago</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function calcularDescuento() {
+        let monto = parseFloat(document.getElementById('monto').value) || 0;
+        let metodo = document.getElementById('metodo_pago').value;
+        let fechaDiv = document.getElementById('fechaTransferencia');
+        
+        if (metodo === 'transferencia') {
+            fechaDiv.style.display = 'block';
+        } else {
+            fechaDiv.style.display = 'none';
+        }
+        
+        let descuento = 0;
+        if (metodo === 'efectivo') {
+            descuento = monto * 0.05;
+        }
+        
+        let total = monto - descuento;
+        
+        document.getElementById('subtotal').textContent = monto.toFixed(2);
+        document.getElementById('descuento').textContent = descuento.toFixed(2);
+        document.getElementById('total').textContent = total.toFixed(2);
+        
+        if (descuento > 0) {
+            document.getElementById('descuentoRow').style.display = 'flex';
+        } else {
+            document.getElementById('descuentoRow').style.display = 'flex';
+        }
+    }
+    
+    document.getElementById('monto').addEventListener('input', calcularDescuento);
+    document.getElementById('metodo_pago').addEventListener('change', calcularDescuento);
+    calcularDescuento();
+</script>
+{% endblock %}

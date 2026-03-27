@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Alumnos{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-5">
+    <div><h2 class="text-xl font-semibold">Alumnos</h2><p class="text-gray-500 text-sm">Gestión de alumnos regulares</p></div>
+    <a href="{{ url_for('nuevo_alumno') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo Alumno</a>
+</div>
+
+<div class="card">
+    <div class="overflow-x-auto p-4">
+        <table class="w-full">
+            <thead>
+                 <th>Nombre</th><th>DNI</th><th>Teléfono</th><th>Cuota</th><th>Vencimiento</th><th>Estado</th><th>Acciones</th>
+            </thead>
+            <tbody>
+                {% for a in alumnos %}
+                <tr>
+                    <td><div class="flex items-center gap-2"><div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-blue-500 text-xs"></i></div>{{ a.nombre }}</div></td>
+                    <td>{{ a.dni }}</td>
+                    <td>{% if a.telefono %}<a href="https://wa.me/{{ a.telefono }}" target="_blank" class="text-green-500"><i class="fab fa-whatsapp"></i> {{ a.telefono }}</a>{% else %}-{% endif %}</td>
+                    <td>${{ "%.0f"|format(a.valor_cuota) }}</td>
+                    <td>{% if a.fecha_vencimiento %}{{ a.fecha_vencimiento.strftime('%d/%m/%Y') }}{% else %}-{% endif %}</td>
+                    <td>{% if a.estado_cuota == 'al_dia' %}<span class="badge-success">Al día</span>{% else %}<span class="badge-danger">Deuda</span>{% endif %}</td>
+                    <td><div class="flex gap-2"><a href="{{ url_for('editar_alumno', id=a.id) }}" class="text-blue-500"><i class="fas fa-edit"></i></a><a href="{{ url_for('pagar_alumno', id=a.id) }}" class="text-green-500"><i class="fas fa-money-bill"></i></a><a href="{{ url_for('historial_pagos_alumno', id=a.id) }}" class="text-purple-500"><i class="fas fa-history"></i></a><a href="{{ url_for('eliminar_alumno', id=a.id) }}" class="text-red-500" onclick="return confirm('¿Eliminar?')"><i class="fas fa-trash"></i></a></div></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Pagar Personalizado{% endblock %}
+
+{% block content %}
+<div class="mb-5">
+    <h2 class="text-xl font-semibold">Registrar Pago - Personalizado</h2>
+    <p class="text-gray-500 text-sm">Cliente: {{ personalizado.nombre }} (Entrenador: {{ personalizado.entrenador or 'No asignado' }})</p>
+    <a href="{{ url_for('personalizados') }}" class="text-blue-500 text-sm hover:underline">← Volver</a>
+</div>
+
+<div class="card max-w-lg">
+    <div class="card-body">
+        <div class="bg-purple-50 p-4 rounded-lg mb-4">
+            <p><strong>Cuota mensual:</strong> ${{ "%.2f"|format(personalizado.valor_mensual) }}</p>
+            <p><strong>Vencimiento actual:</strong> {{ personalizado.fecha_vencimiento.strftime('%d/%m/%Y') if personalizado.fecha_vencimiento else 'No definido' }}</p>
+        </div>
+
+        <form method="POST" id="formPago">
+            <div class="form-group">
+                <label class="form-label">Monto a pagar</label>
+                <input type="number" name="monto" value="{{ personalizado.valor_mensual }}" step="0.01" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Método de pago *</label>
+                <select name="metodo_pago" id="metodo_pago" class="form-control">
+                    <option value="efectivo">💵 Efectivo</option>
+                    <option value="transferencia">🏦 Transferencia bancaria</option>
+                    <option value="tarjeta">💳 Tarjeta de crédito/débito</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="fechaTransferencia" style="display: none;">
+                <label class="form-label">📅 Fecha de transferencia</label>
+                <input type="date" name="fecha_transferencia" class="form-control" value="{{ now.strftime('%Y-%m-%d') }}">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">N° Comprobante (opcional)</label>
+                <input type="text" name="comprobante" class="form-control">
+            </div>
+            
+            <button type="submit" class="btn btn-success w-full py-3">Registrar Pago</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('metodo_pago').addEventListener('change', function() {
+        let fechaDiv = document.getElementById('fechaTransferencia');
+        fechaDiv.style.display = this.value === 'transferencia' ? 'block' : 'none';
+    });
+</script>
+{% endblock %}

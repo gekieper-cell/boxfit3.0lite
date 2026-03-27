@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Bebidas{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-5">
+    <div><h2 class="text-xl font-semibold">Bebidas</h2><p class="text-gray-500 text-sm">Inventario de bebidas</p></div>
+    {% if current_user.role == 'admin' %}<button onclick="document.getElementById('modalBebida').classList.remove('hidden')" class="btn btn-primary"><i class="fas fa-plus"></i> Nueva Bebida</button>{% endif %}
+</div>
+
+<div class="card">
+    <div class="overflow-x-auto p-4">
+        <table class="w-full">
+            <thead>
+                <th>Bebida</th><th>Categoría</th><th>Tamaño</th><th>Precio</th><th>Stock</th><th>Acciones</th>
+            </thead>
+            <tbody>
+                {% for b in bebidas %}
+                <tr>
+                    <td>{{ b.nombre }}</td>
+                    <td>
+                        {% if b.categoria == 'agua' %}💧 Agua
+                        {% elif b.categoria == 'gatorade' %}⚡ Gatorade
+                        {% elif b.categoria == 'isotonico' %}🏃 Isotónico
+                        {% else %}💪 Proteína{% endif %}
+                    </td>
+                    <td>{{ b.tamanio or '-' }}</td>
+                    <td class="text-green-600">${{ b.precio }}</td>
+                    <td>{% if b.stock <= 5 %}<span class="text-red-500 font-bold">{{ b.stock }}</span>{% else %}{{ b.stock }}{% endif %}</td>
+                    <td><div class="flex gap-2">{% if current_user.role == 'admin' %}<a href="#" onclick="editarBebida({{ b.id }}, '{{ b.nombre }}', {{ b.precio }}, {{ b.stock }}, '{{ b.tamanio }}')" class="text-blue-500"><i class="fas fa-edit"></i></a><a href="{{ url_for('eliminar_bebida', id=b.id) }}" class="text-red-500" onclick="return confirm('¿Eliminar?')"><i class="fas fa-trash"></i></a>{% endif %}</div></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="modalBebida" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"><div class="card w-full max-w-md"><div class="card-header"><h3>Nueva Bebida</h3><button onclick="cerrarModal('modalBebida')">&times;</button></div><div class="card-body"><form method="POST" action="{{ url_for('nueva_bebida') }}"><div class="form-group"><label>Nombre</label><input type="text" name="nombre" required class="form-control"></div><div class="grid grid-cols-2 gap-3"><div><label>Categoría</label><select name="categoria" class="form-control"><option value="agua">Agua</option><option value="gatorade">Gatorade</option><option value="isotonico">Isotónico</option><option value="proteina">Proteína</option></select></div><div><label>Tamaño</label><input type="text" name="tamanio" placeholder="500ml" class="form-control"></div></div><div class="grid grid-cols-2 gap-3"><div><label>Precio</label><input type="number" name="precio" step="0.01" required class="form-control"></div><div><label>Stock</label><input type="number" name="stock" value="0" class="form-control"></div></div><button type="submit" class="btn btn-primary w-full mt-3">Guardar</button></form></div></div></div>
+
+<div id="modalEditar" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"><div class="card w-full max-w-md"><div class="card-header"><h3>Editar Bebida</h3><button onclick="cerrarModal('modalEditar')">&times;</button></div><div class="card-body"><form id="formEditar" method="POST"><div class="form-group"><label>Nombre</label><input type="text" name="nombre" id="edit_nombre" required class="form-control"></div><div class="grid grid-cols-2 gap-3"><div><label>Precio</label><input type="number" name="precio" id="edit_precio" step="0.01" required class="form-control"></div><div><label>Stock</label><input type="number" name="stock" id="edit_stock" class="form-control"></div></div><div class="form-group"><label>Tamaño</label><input type="text" name="tamanio" id="edit_tamanio" class="form-control"></div><button type="submit" class="btn btn-primary w-full mt-3">Actualizar</button></form></div></div></div>
+
+<script>
+function editarBebida(id,nombre,precio,stock,tamanio){document.getElementById('formEditar').action='/bebidas/editar/'+id;document.getElementById('edit_nombre').value=nombre;document.getElementById('edit_precio').value=precio;document.getElementById('edit_stock').value=stock;document.getElementById('edit_tamanio').value=tamanio;document.getElementById('modalEditar').classList.remove('hidden');}
+function cerrarModal(id){document.getElementById(id).classList.add('hidden');}
+</script>
+{% endblock %}

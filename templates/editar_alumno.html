@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Editar Alumno{% endblock %}
+
+{% block content %}
+<div class="mb-5"><h2 class="text-xl font-semibold">Editar Alumno</h2><p class="text-gray-500 text-sm">Modificar datos del alumno</p></div>
+
+<div class="card max-w-2xl">
+    <div class="card-body">
+        <form method="POST">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group"><label class="form-label">Nombre completo *</label><input type="text" name="nombre" value="{{ alumno.nombre }}" required class="form-control"></div>
+                <div class="form-group"><label class="form-label">DNI *</label><input type="text" name="dni" value="{{ alumno.dni }}" required class="form-control"></div>
+                <div class="form-group"><label class="form-label">Teléfono</label><input type="text" name="telefono" value="{{ alumno.telefono or '' }}" class="form-control"></div>
+                <div class="form-group"><label class="form-label">Email</label><input type="email" name="email" value="{{ alumno.email or '' }}" class="form-control"></div>
+                <div class="form-group"><label class="form-label">Valor de cuota mensual</label><input type="number" name="valor_cuota" value="{{ alumno.valor_cuota }}" step="0.01" class="form-control"></div>
+                <div class="col-span-2"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="activo" {% if alumno.activo %}checked{% endif %} class="w-4 h-4"><span class="text-sm">Alumno activo</span></label></div>
+            </div>
+            <div class="flex gap-3 mt-4"><button type="submit" class="btn btn-primary">Actualizar</button><a href="{{ url_for('alumnos') }}" class="btn btn-outline">Cancelar</a></div>
+        </form>
+    </div>
+</div>
+{% endblock %}

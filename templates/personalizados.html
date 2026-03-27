@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Personalizados{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-5">
+    <div><h2 class="text-xl font-semibold">Clientes Personalizados</h2><p class="text-gray-500 text-sm">Gestión de entrenamientos personalizados</p></div>
+    <a href="{{ url_for('nuevo_personalizado') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo Personalizado</a>
+</div>
+
+<div class="card">
+    <div class="overflow-x-auto p-4">
+        <table class="w-full">
+            <thead>
+                <th>Nombre</th><th>DNI</th><th>Entrenador</th><th>Cuota</th><th>Vencimiento</th><th>Estado</th><th>Acciones</th>
+            </thead>
+            <tbody>
+                {% for p in personalizados %}
+                <tr>
+                    <td><div class="flex items-center gap-2"><div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center"><i class="fas fa-crown text-yellow-500 text-xs"></i></div>{{ p.nombre }}</div></td>
+                    <td>{{ p.dni }}</td>
+                    <td>{{ p.entrenador or '-' }}</td>
+                    <td>${{ "%.0f"|format(p.valor_mensual) }}</td>
+                    <td>{{ p.fecha_vencimiento.strftime('%d/%m/%Y') if p.fecha_vencimiento else '-' }}</td>
+                    <td>{% if p.activo %}<span class="badge-success">Activo</span>{% else %}<span class="badge-danger">Inactivo</span>{% endif %}</td>
+                    <td><div class="flex gap-2"><a href="{{ url_for('editar_personalizado', id=p.id) }}" class="text-blue-500"><i class="fas fa-edit"></i></a><a href="{{ url_for('pagar_personalizado', id=p.id) }}" class="text-green-500"><i class="fas fa-money-bill"></i></a><a href="{{ url_for('eliminar_personalizado', id=p.id) }}" class="text-red-500" onclick="return confirm('¿Eliminar?')"><i class="fas fa-trash"></i></a></div></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
